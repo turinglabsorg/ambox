@@ -85,6 +85,12 @@ func Run() {
 
 	mux.Handle("POST /v1/inbound", maxBody(http.HandlerFunc(h.Inbound)))
 
+	// Serve og.png
+	mux.HandleFunc("GET /og.png", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "image/png")
+		http.ServeFile(w, r, "/web/og.png")
+	})
+
 	// Serve skill.md
 	mux.HandleFunc("GET /skill.md", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/markdown; charset=utf-8")

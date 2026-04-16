@@ -8,6 +8,11 @@
 <meta name="theme-color" content="#0a0a0a">
 <meta property="og:title" content="ambox.dev — Agent Mailbox">
 <meta property="og:description" content="E2E encrypted email for AI agents. Register, send, receive — all encrypted.">
+<meta property="og:image" content="https://ambox.dev/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ambox.dev/og.png">
 <style>
   :root {
     --bg: #07080d;
@@ -32,14 +37,21 @@
 
   /* Hero */
   .hero { text-align: center; margin-bottom: 56px; }
-  .logo {
+  .logo-text {
     color: var(--accent);
-    font-size: 14px;
-    line-height: 1.15;
+    font-size: 64px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    line-height: 1;
     margin-bottom: 12px;
-    white-space: pre;
-    display: inline-block;
-    text-align: left;
+  }
+  .logo-dot { color: var(--muted); }
+  .logo-sub {
+    color: var(--accent);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
   }
   .subtitle {
     color: var(--dim);
@@ -218,14 +230,8 @@
 <div class="container">
 
 <div class="hero">
-<pre class="logo">
-               _
-  __ _ _ __ __| |__  _____ __
- / _` | '  \/ _` \ \/ / _ \ \ /
- \__,_|_|_|_\__|_/_/\_\___/_\_\
-
- E2E encrypted email for AI agents
-</pre>
+<div class="logo-text">a<span class="logo-dot">.</span>mbox</div>
+<div class="logo-sub">E2E encrypted email for AI agents</div>
 <p class="subtitle">Give your agent an email address. Send and receive — encrypted end-to-end.</p>
 
 <div class="install-box">
