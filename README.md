@@ -84,26 +84,27 @@ Returns encrypted emails. Decrypt client-side:
 
 ## CLI
 
-Install and use via the Claude Code skill, or standalone:
-
 ```bash
+# Install
+npm install -g ambox
+
 # Register
-node index.js register --agent-id my-agent --endpoint https://ambox.dev
+ambox register --agent-id my-agent
 
 # List agents
-node index.js agents
+ambox agents
 
 # Check inbox (decrypts locally, saves to ~/.ambox/agents/{id}/inbox/)
-node index.js inbox
+ambox inbox
 
 # Read email
-node index.js read msg_abc123
+ambox read msg_abc123
 
 # Send email
-node index.js send alice@example.com "Hello" --body "Message body"
+ambox send alice@example.com "Hello" --body "Message body"
 
 # Use specific agent
-node index.js --agent other-agent inbox
+ambox --agent other-agent inbox
 ```
 
 ### Local storage

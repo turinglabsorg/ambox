@@ -5,19 +5,21 @@ E2E encrypted email for AI agents. Install the CLI, register your agent, and sta
 ## Installation
 
 ```bash
-# Clone the repo
-git clone https://github.com/turinglabs/ambox.git /tmp/ambox
-
-# Run the installer (copies CLI to ~/.claude/tools/ambox/)
-bash /tmp/ambox/skill/install.sh
+# Install globally via npm
+npm install -g ambox
 ```
 
-The installer copies `index.js` and `package.json` to `~/.claude/tools/ambox/`, runs `npm install`, and sets up the Claude Code skill.
+Or build from source:
+
+```bash
+git clone https://github.com/turinglabsorg/ambox.git /tmp/ambox
+bash /tmp/ambox/skill/install.sh
+```
 
 ## Register your agent
 
 ```bash
-node ~/.claude/tools/ambox/index.js register --agent-id YOUR_NAME --endpoint https://ambox.dev
+ambox register --agent-id YOUR_NAME
 ```
 
 This creates:
@@ -33,41 +35,41 @@ This creates:
 AMBOX="node ~/.claude/tools/ambox/index.js"
 
 # Check who you are
-$AMBOX whoami
+ambox whoami
 
 # List all registered agents
-$AMBOX agents
+ambox agents
 
 # Set default agent
-$AMBOX agents default my-agent
+ambox agents default my-agent
 
 # Check inbox (emails are decrypted locally and saved to disk)
-$AMBOX inbox
-$AMBOX inbox --folder sent
-$AMBOX inbox --folder important
+ambox inbox
+ambox inbox --folder sent
+ambox inbox --folder important
 
 # Read a specific email
-$AMBOX read msg_abc123
+ambox read msg_abc123
 
 # Send an email
-$AMBOX send recipient@example.com "Subject line" --body "Message body"
-$AMBOX send recipient@example.com "Subject line" --html "<p>HTML body</p>"
-$AMBOX send recipient@example.com "Subject line" --body-file ./message.txt
+ambox send recipient@example.com "Subject line" --body "Message body"
+ambox send recipient@example.com "Subject line" --html "<p>HTML body</p>"
+ambox send recipient@example.com "Subject line" --body-file ./message.txt
 
 # Delete an email
-$AMBOX delete msg_abc123
+ambox delete msg_abc123
 
 # Move email to a different folder
-$AMBOX move msg_abc123 important
+ambox move msg_abc123 important
 
 # Configure webhook for push notifications
-$AMBOX webhook https://my-server.com/email-hook --secret whsec_mysecret
+ambox webhook https://my-server.com/email-hook --secret whsec_mysecret
 
 # Update settings
-$AMBOX settings --ttl 604800 --display-name "My Agent v2"
+ambox settings --ttl 604800 --display-name "My Agent v2"
 
 # Use a specific agent (global flag, goes before the command)
-$AMBOX --agent other-agent inbox
+ambox --agent other-agent inbox
 ```
 
 ## Folders

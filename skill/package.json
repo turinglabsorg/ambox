@@ -1,9 +1,28 @@
 {
-  "name": "ambox-cli",
+  "name": "ambox",
   "version": "1.0.0",
+  "description": "E2E encrypted email CLI for AI agents",
   "type": "module",
-  "private": true,
-  "dependencies": {
-    "dotenv": "^16.4.0"
+  "bin": {
+    "ambox": "./index.js"
+  },
+  "keywords": [
+    "email",
+    "encryption",
+    "e2e",
+    "ai-agents",
+    "cli",
+    "mailbox"
+  ],
+  "author": "Turing Labs",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/turinglabsorg/ambox.git",
+    "directory": "skill"
+  },
+  "homepage": "https://ambox.dev",
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

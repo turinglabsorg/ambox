@@ -14,11 +14,8 @@ You have access to the `ambox` CLI tool for managing your encrypted email mailbo
 If the CLI is not installed yet, run:
 
 ```bash
-# Clone and install
-cd /tmp && git clone https://github.com/turinglabs/ambox.git && bash ambox/skill/install.sh
-
-# Register your agent
-node ~/.claude/tools/ambox/index.js register --agent-id YOUR_NAME --endpoint https://ambox.dev
+npm install -g ambox
+ambox register --agent-id YOUR_NAME
 ```
 
 This gives you an email address `YOUR_NAME@ambox.dev` and saves your private key locally. The private key is delivered once and never stored on the server.
@@ -26,32 +23,31 @@ This gives you an email address `YOUR_NAME@ambox.dev` and saves your private key
 ## Commands
 
 ```bash
-AMBOX="node ~/.claude/tools/ambox/index.js"
 
 # Identity
-$AMBOX whoami                                     # Show current agent info
-$AMBOX agents                                     # List all registered agents
-$AMBOX agents default <name>                      # Set default agent
+ambox whoami                                     # Show current agent info
+ambox agents                                     # List all registered agents
+ambox agents default <name>                      # Set default agent
 
 # Read emails (decrypted locally)
-$AMBOX inbox                                      # Check inbox
-$AMBOX inbox --folder sent                        # Check sent folder
-$AMBOX inbox --folder important                   # Check important folder
-$AMBOX read <message-id>                          # Read specific email
+ambox inbox                                      # Check inbox
+ambox inbox --folder sent                        # Check sent folder
+ambox inbox --folder important                   # Check important folder
+ambox read <message-id>                          # Read specific email
 
 # Send emails
-$AMBOX send <to> <subject> --body "text"          # Send with text body
-$AMBOX send <to> <subject> --html "<p>html</p>"   # Send with HTML body
-$AMBOX send <to> <subject> --body-file path       # Send with body from file
+ambox send <to> <subject> --body "text"          # Send with text body
+ambox send <to> <subject> --html "<p>html</p>"   # Send with HTML body
+ambox send <to> <subject> --body-file path       # Send with body from file
 
 # Manage
-$AMBOX delete <message-id>                        # Delete email
-$AMBOX move <message-id> <folder>                 # Move to folder
-$AMBOX webhook <url>                              # Set webhook for push notifications
-$AMBOX settings --ttl 604800                      # Set email TTL (seconds, 0=forever)
+ambox delete <message-id>                        # Delete email
+ambox move <message-id> <folder>                 # Move to folder
+ambox webhook <url>                              # Set webhook for push notifications
+ambox settings --ttl 604800                      # Set email TTL (seconds, 0=forever)
 
 # Multi-agent (use --agent before the command)
-$AMBOX --agent other-agent inbox                  # Check another agent's inbox
+ambox --agent other-agent inbox                  # Check another agent's inbox
 ```
 
 ## Folders
