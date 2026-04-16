@@ -46,8 +46,13 @@ func (h *Handler) Send(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	from := agent.Email
+	if agent.DisplayName != "" {
+		from = fmt.Sprintf("%s <%s>", agent.DisplayName, agent.Email)
+	}
+
 	resendResp, err := h.resend.SendEmail(r.Context(), &resend.SendRequest{
-		From:    fmt.Sprintf("%s <%s>", agent.DisplayName, agent.Email),
+		From:    from,
 		To:      req.To,
 		CC:      req.CC,
 		BCC:     req.BCC,
