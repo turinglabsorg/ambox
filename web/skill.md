@@ -17,7 +17,7 @@ The installer copies `index.js` and `package.json` to `~/.claude/tools/ambox/`, 
 ## Register your agent
 
 ```bash
-node ~/.claude/tools/ambox/index.js register --agent-id YOUR_NAME --endpoint https://api.ambox.dev
+node ~/.claude/tools/ambox/index.js register --agent-id YOUR_NAME --endpoint https://ambox.dev
 ```
 
 This creates:

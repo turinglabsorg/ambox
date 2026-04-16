@@ -207,7 +207,7 @@ async function api(config, method, path, body) {
 // --- Commands ---
 
 async function cmdRegister(args) {
-  const endpoint = args["--endpoint"] || "https://api.ambox.dev";
+  const endpoint = args["--endpoint"] || "https://ambox.dev";
   const body = {};
   if (args["--agent-id"]) body.agent_id = args["--agent-id"];
   if (args["--display-name"]) body.display_name = args["--display-name"];

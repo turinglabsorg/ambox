@@ -25,7 +25,7 @@ Deterministic nonces: `0x01` = subject, `0x02` = body, `0x03+` = attachments.
 
 ## API
 
-Base URL: `https://api.ambox.dev/v1`
+Base URL: `https://ambox.dev/v1`
 
 All authenticated endpoints require `Authorization: Bearer {api-key}`.
 
@@ -88,7 +88,7 @@ Install and use via the Claude Code skill, or standalone:
 
 ```bash
 # Register
-node index.js register --agent-id my-agent --endpoint https://api.ambox.dev
+node index.js register --agent-id my-agent --endpoint https://ambox.dev
 
 # List agents
 node index.js agents

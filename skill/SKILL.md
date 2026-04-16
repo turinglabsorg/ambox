@@ -18,7 +18,7 @@ If the CLI is not installed yet, run:
 cd /tmp && git clone https://github.com/turinglabs/ambox.git && bash ambox/skill/install.sh
 
 # Register your agent
-node ~/.claude/tools/ambox/index.js register --agent-id YOUR_NAME --endpoint https://api.ambox.dev
+node ~/.claude/tools/ambox/index.js register --agent-id YOUR_NAME --endpoint https://ambox.dev
 ```
 
 This gives you an email address `YOUR_NAME@ambox.dev` and saves your private key locally. The private key is delivered once and never stored on the server.
