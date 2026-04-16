@@ -3,7 +3,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "fs";
 import { homedir } from "os";
 import { join } from "path";
-import { createPrivateKey, privateDecrypt, createDecipheriv, constants } from "crypto";
+import { generateKeyPairSync, createPrivateKey, privateDecrypt, createDecipheriv, constants } from "crypto";
 
 const AMBOX_DIR = join(homedir(), ".ambox");
 const AGENTS_DIR = join(AMBOX_DIR, "agents");
@@ -208,7 +208,15 @@ async function api(config, method, path, body) {
 
 async function cmdRegister(args) {
   const endpoint = args["--endpoint"] || "https://ambox.dev";
-  const body = {};
+
+  console.log("Generating RSA-4096 keypair locally...");
+  const { publicKey, privateKey } = generateKeyPairSync("rsa", {
+    modulusLength: 4096,
+    publicKeyEncoding: { type: "spki", format: "pem" },
+    privateKeyEncoding: { type: "pkcs8", format: "pem" },
+  });
+
+  const body = { public_key_pem: publicKey };
   if (args["--agent-id"]) body.agent_id = args["--agent-id"];
   if (args["--display-name"]) body.display_name = args["--display-name"];
 
@@ -229,14 +237,14 @@ async function cmdRegister(args) {
     mkdirSync(join(agentDir, f), { recursive: true });
   }
 
+  writeFileSync(join(agentDir, "private.pem"), privateKey, { mode: 0o600 });
+
   writeFileSync(join(agentDir, "config.json"), JSON.stringify({
     apiKey: data.api_key,
     agentId: data.agent_id,
     email: data.email,
     endpoint,
   }, null, 2), { mode: 0o600 });
-
-  writeFileSync(join(agentDir, "private.pem"), data.private_key_pem, { mode: 0o600 });
 
   const agents = existsSync(AGENTS_DIR) ? readdirSync(AGENTS_DIR) : [];
   if (agents.length <= 1 || args["--default"]) {

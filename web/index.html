@@ -267,7 +267,7 @@ Private key saved. Back it up — it cannot be recovered.</span>
 <h2>How it works</h2>
 
 <div class="steps">
-  <div class="step"><span class="step-num">1.</span><span class="step-label">Register</span><span class="step-desc">Get <code>{id}@ambox.dev</code> + RSA-4096 private key (delivered once, never stored server-side)</span></div>
+  <div class="step"><span class="step-num">1.</span><span class="step-label">Register</span><span class="step-desc">CLI generates RSA-4096 keypair locally, sends public key to server, gets <code>{id}@ambox.dev</code></span></div>
   <div class="step"><span class="step-num">2.</span><span class="step-label">Send</span><span class="step-desc">Agent calls API, server relays via Resend, stores encrypted copy in sent folder</span></div>
   <div class="step"><span class="step-num">3.</span><span class="step-label">Receive</span><span class="step-desc">Email arrives at Resend, webhook fires, server encrypts body with agent's public key, stores ciphertext</span></div>
   <div class="step"><span class="step-num">4.</span><span class="step-label">Read</span><span class="step-desc">Agent polls inbox, downloads encrypted emails, decrypts locally with private key</span></div>
@@ -349,18 +349,23 @@ Private key saved. Back it up — it cannot be recovered.</span>
 <h2>Encryption</h2>
 
 <div class="crypto-block">
+<span class="comment">// Registration (client-side — private key never leaves your machine)</span>
+keypair     = <span class="fn">RSA-4096-generate</span>()
+<span class="fn">save_locally</span>(keypair.private_key)
+<span class="fn">send_to_server</span>(keypair.public_key)
+
 <span class="comment">// On receive (server-side, before storage)</span>
 aes_key     = <span class="fn">random</span>(<span class="val">32 bytes</span>)
 subject_ct  = <span class="fn">AES-256-GCM</span>(aes_key, nonce=<span class="val">0x01</span>, subject)
 body_ct     = <span class="fn">AES-256-GCM</span>(aes_key, nonce=<span class="val">0x02</span>, body)
 wrapped_key = <span class="fn">RSA-OAEP</span>(agent_public_key, aes_key)
 <span class="fn">store</span>(subject_ct, body_ct, wrapped_key)
-<span class="comment">// plaintext is discarded — server has zero knowledge</span>
+<span class="comment">// plaintext discarded — server has zero knowledge</span>
 
 <span class="comment">// On read (client-side, your machine)</span>
-aes_key = <span class="fn">RSA-OAEP-decrypt</span>(private_key, wrapped_key)
-subject = <span class="fn">AES-GCM-decrypt</span>(aes_key, nonce=<span class="val">0x01</span>, subject_ct)
-body    = <span class="fn">AES-GCM-decrypt</span>(aes_key, nonce=<span class="val">0x02</span>, body_ct)
+aes_key     = <span class="fn">RSA-OAEP-decrypt</span>(private_key, wrapped_key)
+subject     = <span class="fn">AES-GCM-decrypt</span>(aes_key, nonce=<span class="val">0x01</span>, subject_ct)
+body        = <span class="fn">AES-GCM-decrypt</span>(aes_key, nonce=<span class="val">0x02</span>, body_ct)
 </div>
 
 <h2>Architecture</h2>
@@ -372,16 +377,16 @@ body    = <span class="fn">AES-GCM-decrypt</span>(aes_key, nonce=<span class="va
     <div class="terminal-dot dot-green"></div>
     <span class="terminal-title">architecture</span>
   </div>
-  <div class="terminal-body">
-<span class="output">  ┌─────────┐        ┌──────────────┐        ┌─────────┐
-  │  Agent  │  REST  │  ambox API   │ Resend │  Email  │
-  │  (CLI)  │◄──────►│  (Cloud Run) │◄──────►│  World  │
-  └─────────┘        └──────┬───────┘        └─────────┘
-                            │
-                     ┌──────┴───────┐
-                     │  Firestore   │
-                     │ (encrypted)  │
-                     └──────────────┘</span>
+  <div class="terminal-body" style="text-align:center;">
+<span class="output">┌─────────┐        ┌──────────────┐        ┌─────────┐
+│  Agent  │  REST  │  ambox API   │ Resend │  Email  │
+│  (CLI)  │◄──────►│  (Cloud Run) │◄──────►│  World  │
+└─────────┘        └──────┬───────┘        └─────────┘
+                          │
+                   ┌──────┴───────┐
+                   │  Firestore   │
+                   │ (encrypted)  │
+                   └──────────────┘</span>
   </div>
 </div>
 

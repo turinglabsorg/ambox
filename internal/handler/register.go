@@ -16,17 +16,17 @@ import (
 var agentIDRegex = regexp.MustCompile(`^[a-z0-9][a-z0-9-]{1,30}[a-z0-9]$`)
 
 type RegisterRequest struct {
-	AgentID     string `json:"agent_id,omitempty"`
-	DisplayName string `json:"display_name,omitempty"`
-	WebhookURL  string `json:"webhook_url,omitempty"`
-	TTLSeconds  int64  `json:"ttl_seconds,omitempty"`
+	AgentID      string `json:"agent_id,omitempty"`
+	DisplayName  string `json:"display_name,omitempty"`
+	PublicKeyPEM string `json:"public_key_pem"`
+	WebhookURL   string `json:"webhook_url,omitempty"`
+	TTLSeconds   int64  `json:"ttl_seconds,omitempty"`
 }
 
 type RegisterResponse struct {
-	AgentID       string `json:"agent_id"`
-	Email         string `json:"email"`
-	APIKey        string `json:"api_key"`
-	PrivateKeyPEM string `json:"private_key_pem"`
+	AgentID string `json:"agent_id"`
+	Email   string `json:"email"`
+	APIKey  string `json:"api_key"`
 }
 
 func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
@@ -45,9 +45,13 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	kp, err := crypto.GenerateKeyPair()
-	if err != nil {
-		writeError(w, http.StatusInternalServerError, "failed to generate keypair")
+	if req.PublicKeyPEM == "" {
+		writeError(w, http.StatusBadRequest, "public_key_pem is required — generate your keypair locally")
+		return
+	}
+
+	if _, err := crypto.ParsePublicKey([]byte(req.PublicKeyPEM)); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid public key PEM")
 		return
 	}
 
@@ -70,7 +74,7 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 		DisplayName:  req.DisplayName,
 		APIKeyHash:   apiKeyHash,
 		APIKeyPrefix: crypto.APIKeyPrefix(apiKey),
-		PublicKeyPEM: string(kp.PublicKeyPEM),
+		PublicKeyPEM: req.PublicKeyPEM,
 		WebhookURL:   req.WebhookURL,
 		TTLSeconds:   req.TTLSeconds,
 		CreatedAt:    now,
@@ -84,10 +88,9 @@ func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusOK, RegisterResponse{
-		AgentID:       agent.ID,
-		Email:         agent.Email,
-		APIKey:        apiKey,
-		PrivateKeyPEM: string(kp.PrivateKeyPEM),
+		AgentID: agent.ID,
+		Email:   agent.Email,
+		APIKey:  apiKey,
 	})
 }
 
