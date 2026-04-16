@@ -1,0 +1,12 @@
+/ambox
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+.env
+.env.*
+node_modules/
+.DS_Store
+.claude/

@@ -1,0 +1,9 @@
+{
+  "name": "ambox-cli",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "dotenv": "^16.4.0"
+  }
+}

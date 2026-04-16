@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ambox.dev — Agent Mailbox</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%F0%9F%93%AC</text></svg>">
+<meta name="theme-color" content="#0a0a0a">
+<meta property="og:title" content="ambox.dev — Agent Mailbox">
+<meta property="og:description" content="E2E encrypted email for AI agents. Register, send, receive — all encrypted.">
+<style>
+  :root {
+    --bg: #07080d;
+    --card: #12141f;
+    --fg: #e2e4f0;
+    --dim: #9a9cc0;
+    --muted: #636682;
+    --accent: #4ade80;
+    --border: #1e2035;
+    --border-accent: #2a2d4a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+    line-height: 1.7;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 760px; margin: 0 auto; padding: 48px 24px; }
+
+  /* Hero */
+  .hero { text-align: center; margin-bottom: 56px; }
+  .logo {
+    color: var(--accent);
+    font-size: 14px;
+    line-height: 1.15;
+    margin-bottom: 12px;
+    white-space: pre;
+    display: inline-block;
+    text-align: left;
+  }
+  .subtitle {
+    color: var(--dim);
+    font-size: 15px;
+    margin-bottom: 32px;
+  }
+
+  /* Install CTA */
+  .install-cta {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--bg);
+    padding: 10px 28px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .install-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(74, 222, 128, 0.25);
+  }
+  .install-sub {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 12px;
+  }
+  .install-sub a { color: var(--dim); }
+
+  /* Terminal */
+  .terminal {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 32px 0;
+    text-align: left;
+  }
+  .terminal-bar {
+    background: #1a1c2a;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-red { background: #ff5f57; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #28c840; }
+  .terminal-title { color: var(--muted); font-size: 12px; margin-left: 8px; }
+  .terminal-body {
+    padding: 20px;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-x: auto;
+  }
+  .terminal-body .prompt { color: var(--muted); }
+  .terminal-body .cmd { color: var(--accent); }
+  .terminal-body .output { color: var(--dim); }
+  .terminal-body .highlight { color: #fbbf24; }
+
+  /* Sections */
+  h2 {
+    color: var(--accent);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 48px 0 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  p { margin-bottom: 14px; font-size: 14px; color: var(--dim); }
+
+  /* Features grid */
+  .features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin: 20px 0;
+  }
+  .feature {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+  .feature:hover { border-color: var(--border-accent); }
+  .feature h3 { color: var(--accent); font-size: 13px; margin-bottom: 8px; font-weight: 600; }
+  .feature p { font-size: 12px; color: var(--muted); margin: 0; line-height: 1.5; }
+  .feature .powered { color: var(--muted); font-size: 11px; margin-top: 8px; }
+  .feature .powered a { color: var(--dim); }
+
+  /* Steps */
+  .steps { margin: 20px 0; }
+  .step {
+    display: flex;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .step-num { color: var(--accent); font-weight: 700; min-width: 24px; }
+  .step-label { color: var(--fg); min-width: 80px; font-weight: 600; }
+  .step-desc { color: var(--dim); }
+
+  /* API endpoints */
+  .endpoint {
+    display: flex;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    align-items: baseline;
+  }
+  .endpoint .method { color: var(--accent); min-width: 56px; font-weight: 700; }
+  .endpoint .path { color: var(--fg); flex: 1; }
+  .endpoint .desc { color: var(--muted); font-size: 12px; text-align: right; }
+
+  /* Crypto block */
+  .crypto-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    font-size: 12px;
+    line-height: 1.7;
+    overflow-x: auto;
+  }
+  .crypto-block .comment { color: var(--muted); }
+  .crypto-block .fn { color: var(--accent); }
+  .crypto-block .val { color: #fbbf24; }
+
+  /* Footer */
+  .footer {
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+  }
+  .footer a { color: var(--accent); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  @media (max-width: 600px) {
+    .features { grid-template-columns: 1fr; }
+    .logo { font-size: 11px; }
+    .endpoint .desc { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="hero">
+<pre class="logo">
+               _
+  __ _ _ __ __| |__  _____ __
+ / _` | '  \/ _` \ \/ / _ \ \ /
+ \__,_|_|_|_\__|_/_/\_\___/_\_\
+
+ E2E encrypted email for AI agents
+</pre>
+<p class="subtitle">Give your agent an email address. Send and receive — encrypted end-to-end.</p>
+
+<a href="/skill.md" class="install-cta">Install into your agent</a>
+<p class="install-sub">Works with <a href="https://claude.ai/claude-code">Claude Code</a>, or any agent via REST API</p>
+</div>
+
+<div class="terminal">
+  <div class="terminal-bar">
+    <div class="terminal-dot dot-red"></div>
+    <div class="terminal-dot dot-yellow"></div>
+    <div class="terminal-dot dot-green"></div>
+    <span class="terminal-title">~/.ambox</span>
+  </div>
+  <div class="terminal-body">
+<span class="prompt">$</span> <span class="cmd">ambox register</span> --agent-id my-agent
+<span class="output">Registered successfully!
+Agent ID:  my-agent
+Email:     <span class="highlight">my-agent@ambox.dev</span>
+Private key saved. Back it up — it cannot be recovered.</span>
+
+<span class="prompt">$</span> <span class="cmd">ambox send</span> alice@example.com <span class="highlight">"Hello from my agent"</span>
+<span class="output">Email sent! Message ID: msg_a1b2c3d4</span>
+
+<span class="prompt">$</span> <span class="cmd">ambox inbox</span>
+<span class="output">[msg_e5f6] 4/16 17:25 | From: alice@example.com | <span class="highlight">Re: Hello!</span>
+[msg_g7h8] 4/16 16:03 | From: bob@company.io  | <span class="highlight">Invoice attached</span> [1 att]</span>
+  </div>
+</div>
+
+<h2>How it works</h2>
+
+<div class="steps">
+  <div class="step"><span class="step-num">1.</span><span class="step-label">Register</span><span class="step-desc">Get <code>{id}@ambox.dev</code> + RSA-4096 private key (delivered once, never stored server-side)</span></div>
+  <div class="step"><span class="step-num">2.</span><span class="step-label">Send</span><span class="step-desc">Agent calls API, server relays via Resend, stores encrypted copy in sent folder</span></div>
+  <div class="step"><span class="step-num">3.</span><span class="step-label">Receive</span><span class="step-desc">Email arrives at Resend, webhook fires, server encrypts body with agent's public key, stores ciphertext</span></div>
+  <div class="step"><span class="step-num">4.</span><span class="step-label">Read</span><span class="step-desc">Agent polls inbox, downloads encrypted emails, decrypts locally with private key</span></div>
+</div>
+
+<h2>Features</h2>
+
+<div class="features">
+  <div class="feature">
+    <h3>E2E encryption</h3>
+    <p>AES-256-GCM per message, RSA-4096 key wrapping. Server stores only ciphertext. Decryption happens on your machine.</p>
+  </div>
+  <div class="feature">
+    <h3>Auto-classification</h3>
+    <p>Incoming emails sorted into inbox, important, transactional, notification, spam.</p>
+    <p class="powered">Powered by <a href="https://ollama.com">Ollama</a></p>
+  </div>
+  <div class="feature">
+    <h3>Multi-agent</h3>
+    <p>One CLI manages unlimited agents. Each gets its own address, keys, and local mailbox.</p>
+  </div>
+  <div class="feature">
+    <h3>Webhook push</h3>
+    <p>Get notified on new email. HMAC-signed payloads with retry and exponential backoff.</p>
+  </div>
+  <div class="feature">
+    <h3>Local storage</h3>
+    <p>Decrypted emails saved to disk, organized by folder and timestamp. Read offline.</p>
+  </div>
+  <div class="feature">
+    <h3>Configurable TTL</h3>
+    <p>Per-agent email retention. Auto-delete after expiry, or keep forever. Your choice.</p>
+  </div>
+</div>
+
+<h2>Quick start</h2>
+
+<div class="terminal">
+  <div class="terminal-bar">
+    <div class="terminal-dot dot-red"></div>
+    <div class="terminal-dot dot-yellow"></div>
+    <div class="terminal-dot dot-green"></div>
+    <span class="terminal-title">install</span>
+  </div>
+  <div class="terminal-body">
+<span class="comment"># Install the CLI</span>
+<span class="prompt">$</span> <span class="cmd">git clone</span> https://github.com/turinglabsorg/ambox.git /tmp/ambox
+<span class="prompt">$</span> <span class="cmd">bash</span> /tmp/ambox/skill/install.sh
+
+<span class="comment"># Register your agent</span>
+<span class="prompt">$</span> <span class="cmd">ambox register</span> --agent-id my-agent
+
+<span class="comment"># Check inbox (decrypts locally)</span>
+<span class="prompt">$</span> <span class="cmd">ambox inbox</span>
+
+<span class="comment"># Send an email</span>
+<span class="prompt">$</span> <span class="cmd">ambox send</span> alice@example.com <span class="highlight">"Hello"</span> --body <span class="highlight">"Hi from my agent!"</span>
+
+<span class="comment"># Multi-agent</span>
+<span class="prompt">$</span> <span class="cmd">ambox agents</span>
+<span class="output">  my-agent (default) — my-agent@ambox.dev
+  second-agent       — second-agent@ambox.dev</span>
+  </div>
+</div>
+
+<h2>API</h2>
+
+<p>Base URL: <code>https://api.ambox.dev/v1</code> &mdash; All endpoints require <code>Authorization: Bearer {api-key}</code></p>
+
+<div>
+  <div class="endpoint"><span class="method">POST</span><span class="path">/register</span><span class="desc">Create agent</span></div>
+  <div class="endpoint"><span class="method">POST</span><span class="path">/send</span><span class="desc">Send email</span></div>
+  <div class="endpoint"><span class="method">GET</span><span class="path">/inbox</span><span class="desc">Poll emails</span></div>
+  <div class="endpoint"><span class="method">DELETE</span><span class="path">/emails/{id}</span><span class="desc">Delete</span></div>
+  <div class="endpoint"><span class="method">PUT</span><span class="path">/emails/{id}/move</span><span class="desc">Move to folder</span></div>
+  <div class="endpoint"><span class="method">PUT</span><span class="path">/webhook</span><span class="desc">Configure webhook</span></div>
+  <div class="endpoint"><span class="method">PUT</span><span class="path">/settings</span><span class="desc">Update settings</span></div>
+</div>
+
+<h2>Encryption</h2>
+
+<div class="crypto-block">
+<span class="comment">// On receive (server-side, before storage)</span>
+aes_key     = <span class="fn">random</span>(<span class="val">32 bytes</span>)
+subject_ct  = <span class="fn">AES-256-GCM</span>(aes_key, nonce=<span class="val">0x01</span>, subject)
+body_ct     = <span class="fn">AES-256-GCM</span>(aes_key, nonce=<span class="val">0x02</span>, body)
+wrapped_key = <span class="fn">RSA-OAEP</span>(agent_public_key, aes_key)
+<span class="fn">store</span>(subject_ct, body_ct, wrapped_key)
+<span class="comment">// plaintext is discarded — server has zero knowledge</span>
+
+<span class="comment">// On read (client-side, your machine)</span>
+aes_key = <span class="fn">RSA-OAEP-decrypt</span>(private_key, wrapped_key)
+subject = <span class="fn">AES-GCM-decrypt</span>(aes_key, nonce=<span class="val">0x01</span>, subject_ct)
+body    = <span class="fn">AES-GCM-decrypt</span>(aes_key, nonce=<span class="val">0x02</span>, body_ct)
+</div>
+
+<h2>Architecture</h2>
+
+<div class="terminal">
+  <div class="terminal-bar">
+    <div class="terminal-dot dot-red"></div>
+    <div class="terminal-dot dot-yellow"></div>
+    <div class="terminal-dot dot-green"></div>
+    <span class="terminal-title">architecture</span>
+  </div>
+  <div class="terminal-body">
+<span class="output">  ┌─────────┐        ┌──────────────┐        ┌─────────┐
+  │  Agent  │  REST  │  ambox API   │ Resend │  Email  │
+  │  (CLI)  │◄──────►│  (Cloud Run) │◄──────►│  World  │
+  └─────────┘        └──────┬───────┘        └─────────┘
+                            │
+                     ┌──────┴───────┐
+                     │  Firestore   │
+                     │ (encrypted)  │
+                     └──────────────┘</span>
+  </div>
+</div>
+
+<div class="footer">
+  <p><a href="https://turinglabs.org">turinglabs_</a> &middot; <a href="https://github.com/turinglabsorg/ambox">GitHub</a> &middot; MIT</p>
+</div>
+
+</div>
+</body>
+</html>
