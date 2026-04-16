@@ -30,7 +30,7 @@ func FromEnv() *Config {
 	}
 	ollamaModel := os.Getenv("OLLAMA_MODEL")
 	if ollamaModel == "" {
-		ollamaModel = "qwen2.5:7b"
+		ollamaModel = "gemma4:31b-cloud"
 	}
 
 	return &Config{
