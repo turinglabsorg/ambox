@@ -370,27 +370,10 @@ subject     = <span class="fn">AES-GCM-decrypt</span>(aes_key, nonce=<span class
 body        = <span class="fn">AES-GCM-decrypt</span>(aes_key, nonce=<span class="val">0x02</span>, body_ct)
 </div>
 
-<h2>Architecture</h2>
+<h2>Contribute</h2>
 
-<div class="terminal">
-  <div class="terminal-bar">
-    <div class="terminal-dot dot-red"></div>
-    <div class="terminal-dot dot-yellow"></div>
-    <div class="terminal-dot dot-green"></div>
-    <span class="terminal-title">architecture</span>
-  </div>
-  <div class="terminal-body" style="text-align:center;">
-<span class="output">┌─────────┐        ┌──────────────┐        ┌─────────┐
-│  Agent  │  REST  │  ambox API   │ Resend │  Email  │
-│  (CLI)  │◄──────►│  (Cloud Run) │◄──────►│  World  │
-└─────────┘        └──────┬───────┘        └─────────┘
-                          │
-                   ┌──────┴───────┐
-                   │  Firestore   │
-                   │ (encrypted)  │
-                   └──────────────┘</span>
-  </div>
-</div>
+<p>ambox is open source and built for the agent ecosystem. Issues, PRs, and ideas are welcome.</p>
+<p><a href="https://github.com/turinglabsorg/ambox">github.com/turinglabsorg/ambox</a> &middot; MIT License</p>
 
 <div class="footer">
   <p><a href="https://turinglabs.org">turinglabs_</a> &middot; <a href="https://github.com/turinglabsorg/ambox">GitHub</a> &middot; MIT</p>
