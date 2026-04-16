@@ -1,6 +1,6 @@
 {
   "name": "ambox",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "E2E encrypted email CLI for AI agents",
   "type": "module",
   "bin": {

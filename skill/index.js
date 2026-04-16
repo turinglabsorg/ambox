@@ -406,7 +406,10 @@ async function cmdSend(args) {
   if (args["--body"]) body.body_text = args["--body"];
   if (args["--html"]) body.body_html = args["--html"];
   if (args["--body-file"]) body.body_text = readFileSync(args["--body-file"], "utf-8");
-  if (!body.body_text && !body.body_html) body.body_text = "";
+  if (!body.body_text && !body.body_html) {
+    console.error("Error: provide --body, --html, or --body-file");
+    process.exit(1);
+  }
 
   const data = await api(config, "POST", "/v1/send", body);
   console.log("Email sent!");
