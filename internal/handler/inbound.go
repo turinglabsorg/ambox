@@ -100,49 +100,82 @@ func (h *Handler) processInboundForRecipient(r *http.Request, recipientEmail str
 		expiresAt = &t
 	}
 
-	// Fetch attachments via Resend API
+	// Fetch attachments from both Resend surfaces. Some inbound payloads expose
+	// base64 attachment content on the email detail response, while others only
+	// expose metadata/download URLs via the attachments endpoint.
 	var attachments []store.Attachment
-	attList, err := h.resend.ListInboundAttachments(r.Context(), data.EmailID)
-	if err != nil {
-		log.Printf("failed to list attachments for %s: %v", data.EmailID, err)
-	}
-	for i, attMeta := range attList {
-		nonceIndex := 3 + i
+	nextNonceIndex := 3
+	seenAttachments := map[string]bool{}
 
-		attData, err := h.resend.DownloadAttachment(r.Context(), attMeta.DownloadURL)
-		if err != nil {
-			log.Printf("failed to download attachment %s: %v", attMeta.Filename, err)
-			continue
+	storeAttachment := func(filename, contentType string, sizeBytes int64, attData []byte) {
+		if filename == "" {
+			log.Printf("skipping attachment with empty filename for %s", data.EmailID)
+			return
 		}
+		if seenAttachments[filename] {
+			return
+		}
+
+		nonceIndex := nextNonceIndex
+		nextNonceIndex++
 
 		encAtt, err := crypto.EncryptAttachment(pubKey, attData, nonceIndex)
 		if err != nil {
-			log.Printf("failed to encrypt attachment %s: %v", attMeta.Filename, err)
-			continue
+			log.Printf("failed to encrypt attachment %s: %v", filename, err)
+			return
 		}
 
-		gcsPath := fmt.Sprintf("%s/%s/%s.enc", agent.ID, msgID, attMeta.Filename)
+		gcsPath := fmt.Sprintf("%s/%s/%s.enc", agent.ID, msgID, filename)
 		encBytes, err := base64.StdEncoding.DecodeString(encAtt.Ciphertext)
 		if err != nil {
 			log.Printf("failed to decode encrypted attachment: %v", err)
-			continue
+			return
 		}
 
 		if h.gcs != nil {
 			if err := h.gcs.Upload(r.Context(), gcsPath, encBytes, "application/octet-stream"); err != nil {
 				log.Printf("failed to upload attachment to gcs: %v", err)
-				continue
+				return
 			}
 		}
 
+		if sizeBytes == 0 {
+			sizeBytes = int64(len(attData))
+		}
+		seenAttachments[filename] = true
 		attachments = append(attachments, store.Attachment{
-			Filename:    attMeta.Filename,
-			ContentType: attMeta.ContentType,
-			SizeBytes:   attMeta.Size,
+			Filename:    filename,
+			ContentType: contentType,
+			SizeBytes:   sizeBytes,
 			GCSPath:     gcsPath,
 			WrappedKey:  encAtt.WrappedKey,
 			NonceIndex:  nonceIndex,
 		})
+	}
+
+	for _, inlineAtt := range content.Attachments {
+		if inlineAtt.Content == "" {
+			continue
+		}
+		attData, err := base64.StdEncoding.DecodeString(inlineAtt.Content)
+		if err != nil {
+			log.Printf("failed to decode inline attachment %s: %v", inlineAtt.Filename, err)
+			continue
+		}
+		storeAttachment(inlineAtt.Filename, inlineAtt.ContentType, int64(len(attData)), attData)
+	}
+
+	attList, err := h.resend.ListInboundAttachments(r.Context(), data.EmailID)
+	if err != nil {
+		log.Printf("failed to list attachments for %s: %v", data.EmailID, err)
+	}
+	for _, attMeta := range attList {
+		attData, err := h.resend.DownloadAttachment(r.Context(), attMeta.DownloadURL)
+		if err != nil {
+			log.Printf("failed to download attachment %s: %v", attMeta.Filename, err)
+			continue
+		}
+		storeAttachment(attMeta.Filename, attMeta.ContentType, attMeta.Size, attData)
 	}
 
 	email := &store.Email{
