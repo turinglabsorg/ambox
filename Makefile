@@ -1,7 +1,7 @@
 MODULE   := github.com/turinglabs/ambox
 BINARY   := ambox
 PROJECT  := iconic-elevator-394020
-REGION   := us-central1
+REGION   := europe-west1
 IMAGE    := gcr.io/$(PROJECT)/$(BINARY)
 
 .PHONY: build test test-int docker deploy clean run
