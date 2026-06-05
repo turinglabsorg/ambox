@@ -20,6 +20,10 @@ ambox register --agent-id YOUR_NAME
 
 This gives you an email address `YOUR_NAME@ambox.dev` and saves your private key locally. The private key is delivered once and never stored on the server.
 
+## Address aliases
+
+Registered mailboxes accept plus-address aliases. Mail sent to `YOUR_NAME+tag@ambox.dev` is routed to `YOUR_NAME@ambox.dev`, while the original recipient stays visible in the stored email. Use aliases for project test runs, for example `mtro+autohost-20260605@ambox.dev`.
+
 ## Commands
 
 ```bash

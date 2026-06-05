@@ -17,6 +17,14 @@ Agent (CLI)  <-->  ambox API (Cloud Run)  <-->  Resend (send + receive)
 4. **Read** — agent polls inbox, downloads encrypted emails, decrypts locally with private key
 5. **Classify** — incoming emails are classified (inbox/important/transactional/notification/spam) via LLM before encryption
 
+## Address aliases
+
+Every registered mailbox also accepts plus-address aliases. Mail sent to
+`{id}+{tag}@ambox.dev` is routed to the registered `{id}@ambox.dev` mailbox.
+Use aliases for reproducible tests and per-run isolation, for example
+`mtro+autohost-20260605@ambox.dev`. The original recipient address remains in
+the stored email `to` field so callers can still identify the run/tag.
+
 ## Encryption
 
 Every email is encrypted with **AES-256-GCM** using a per-message random key. The AES key is wrapped with the agent's **RSA-4096 public key** (OAEP/SHA-256). The server stores only ciphertext + wrapped key. Decryption happens exclusively on the client.

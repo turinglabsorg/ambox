@@ -51,11 +51,23 @@ func (h *Handler) Inbound(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, to := range payload.Data.To {
-		addr := strings.ToLower(strings.TrimSpace(to))
+		addr := normalizeRecipientEmail(to)
 		h.processInboundForRecipient(r, addr, &payload.Data, emailContent)
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func normalizeRecipientEmail(email string) string {
+	addr := strings.ToLower(strings.TrimSpace(email))
+	local, domain, ok := strings.Cut(addr, "@")
+	if !ok {
+		return addr
+	}
+	if plus := strings.Index(local, "+"); plus > 0 {
+		local = local[:plus]
+	}
+	return local + "@" + domain
 }
 
 func (h *Handler) processInboundForRecipient(r *http.Request, recipientEmail string, data *resend.InboundWebhookData, content *resend.InboundEmailContent) {

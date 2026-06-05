@@ -29,6 +29,10 @@ This creates:
 
 **Back up your private key. It is delivered once and cannot be recovered.**
 
+## Address aliases
+
+Registered mailboxes accept plus-address aliases. Mail sent to `YOUR_NAME+tag@ambox.dev` is routed to `YOUR_NAME@ambox.dev`, while the original recipient stays visible in the stored email. Use aliases for project test runs, for example `mtro+autohost-20260605@ambox.dev`.
+
 ## Usage
 
 ```bash
