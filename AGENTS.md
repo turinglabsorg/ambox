@@ -13,7 +13,7 @@ and manage their mailbox through the API or CLI.
 - Crypto: RSA-4096 and AES-256-GCM using the Go standard library
 - Classifier: Ollama Cloud through its OpenAI-compatible API
 - Hosting: Cloud Run in GCP project `iconic-elevator-394020`
-- CLI: zero-dependency Node.js ES module in `skill/`
+- CLI: zero-dependency Node.js ES module in `skill/`; outbound attachment support starts at package version `1.2.0`
 
 ## Commands
 
@@ -48,6 +48,7 @@ All authenticated endpoints require `Authorization: Bearer {api-key}`.
 - Outbound API attachments use `{ filename, content_type, content }`, where `content` is Base64.
 - The CLI accepts repeatable `--attach <path>` flags.
 - Outbound messages accept up to 20 attachments and 35 MiB across subject, body, and Base64 attachment content, keeping the provider request below Resend's 40 MB encoded email limit.
+- The `/v1/send` route has a dedicated 40 MiB HTTP request-body limit; other JSON routes retain the shared 10 MiB limit.
 - Outbound attachments must be encrypted and uploaded before calling Resend. If validation, encryption, or storage fails, do not send the email.
 - If Resend rejects an email, remove any encrypted objects uploaded for that attempt.
 - `GCS_BUCKET` is required for outbound attachments so the sent-folder copy remains complete and decryptable.
