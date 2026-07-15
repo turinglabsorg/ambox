@@ -2,12 +2,38 @@
 
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "fs";
 import { homedir } from "os";
-import { join } from "path";
+import { basename, extname, join } from "path";
 import { generateKeyPairSync, createPrivateKey, privateDecrypt, createDecipheriv, constants } from "crypto";
 
 const AMBOX_DIR = join(homedir(), ".ambox");
 const AGENTS_DIR = join(AMBOX_DIR, "agents");
 const DEFAULT_FILE = join(AMBOX_DIR, "default");
+const MAX_OUTGOING_ATTACHMENTS = 20;
+const MAX_OUTGOING_EMAIL_PAYLOAD_SIZE = 35 * 1024 * 1024;
+
+const CONTENT_TYPES = {
+  ".csv": "text/csv",
+  ".doc": "application/msword",
+  ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ".gif": "image/gif",
+  ".htm": "text/html",
+  ".html": "text/html",
+  ".jpeg": "image/jpeg",
+  ".jpg": "image/jpeg",
+  ".json": "application/json",
+  ".md": "text/markdown",
+  ".pdf": "application/pdf",
+  ".png": "image/png",
+  ".ppt": "application/vnd.ms-powerpoint",
+  ".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  ".svg": "image/svg+xml",
+  ".txt": "text/plain",
+  ".webp": "image/webp",
+  ".xls": "application/vnd.ms-excel",
+  ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  ".xml": "application/xml",
+  ".zip": "application/zip",
+};
 
 function getAgentDir(agentName) {
   return join(AGENTS_DIR, agentName);
@@ -396,7 +422,7 @@ async function cmdSend(args) {
   const to = args._[0];
   const subject = args._[1];
   if (!to || !subject) {
-    console.error("Usage: ambox send <to> <subject> [--body text] [--html html] [--body-file path]");
+    console.error("Usage: ambox send <to> <subject> [--body text] [--html html] [--body-file path] [--attach path ...]");
     process.exit(1);
   }
 
@@ -411,10 +437,50 @@ async function cmdSend(args) {
     process.exit(1);
   }
 
+  body.attachments = buildOutgoingAttachments(args["--attach"], subject, body.body_text, body.body_html);
+  if (body.attachments.length === 0) delete body.attachments;
+
   const data = await api(config, "POST", "/v1/send", body);
   console.log("Email sent!");
   console.log("Message ID: " + data.message_id);
   console.log("Resend ID:  " + data.resend_id);
+}
+
+function buildOutgoingAttachments(attachArg, subject, bodyText, bodyHtml) {
+  if (attachArg === undefined) return [];
+
+  const paths = Array.isArray(attachArg) ? attachArg : [attachArg];
+  if (paths.length > MAX_OUTGOING_ATTACHMENTS) {
+    throw new Error(`A maximum of ${MAX_OUTGOING_ATTACHMENTS} attachments is allowed`);
+  }
+
+  let payloadSize = Buffer.byteLength(subject || "") + Buffer.byteLength(bodyText || "") + Buffer.byteLength(bodyHtml || "");
+  const seenFilenames = new Set();
+
+  return paths.map((path) => {
+    if (typeof path !== "string" || path.length === 0) {
+      throw new Error("--attach requires a file path");
+    }
+
+    const filename = basename(path);
+    const filenameKey = filename.toLowerCase();
+    if (seenFilenames.has(filenameKey)) {
+      throw new Error("Attachment filenames must be unique");
+    }
+    seenFilenames.add(filenameKey);
+
+    const content = readFileSync(path).toString("base64");
+    payloadSize += Buffer.byteLength(content);
+    if (payloadSize > MAX_OUTGOING_EMAIL_PAYLOAD_SIZE) {
+      throw new Error("Email content and attachments must not exceed 35 MiB after base64 encoding");
+    }
+
+    return {
+      filename,
+      content_type: CONTENT_TYPES[extname(filename).toLowerCase()] || "application/octet-stream",
+      content,
+    };
+  });
 }
 
 async function cmdDelete(args) {
@@ -522,10 +588,16 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i++) {
     if (argv[i].startsWith("--")) {
       const key = argv[i];
+      let value;
       if (i + 1 < argv.length && !argv[i + 1].startsWith("--")) {
-        args[key] = argv[++i];
+        value = argv[++i];
       } else {
-        args[key] = true;
+        value = true;
+      }
+      if (Object.hasOwn(args, key)) {
+        args[key] = Array.isArray(args[key]) ? [...args[key], value] : [args[key], value];
+      } else {
+        args[key] = value;
       }
     } else {
       args._.push(argv[i]);

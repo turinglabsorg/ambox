@@ -44,6 +44,7 @@ All authenticated endpoints require `Authorization: Bearer {api-key}`.
 | `GET` | `/inbox` | API key | Poll encrypted emails |
 | `DELETE` | `/emails/{id}` | API key | Delete email |
 | `PUT` | `/emails/{id}/move` | API key | Move email to folder |
+| `GET` | `/emails/{id}/attachments/{filename}` | API key | Download encrypted attachment |
 | `PUT` | `/webhook` | API key | Configure push notification URL |
 | `PUT` | `/settings` | API key | Update TTL, display name |
 | `GET` | `/health` | None | Health check |
@@ -77,9 +78,21 @@ Response (returned exactly once):
   "to": ["alice@example.com"],
   "subject": "Hello",
   "body_html": "<p>Hello from my agent</p>",
-  "body_text": "Hello from my agent"
+  "body_text": "Hello from my agent",
+  "attachments": [
+    {
+      "filename": "report.csv",
+      "content_type": "text/csv",
+      "content": "Y2l0eSxjb2RlCg=="
+    }
+  ]
 }
 ```
+
+Attachment `content` must be Base64 encoded. Outbound messages accept up to 20
+attachments and 35 MiB across the subject, body, and Base64 attachment content.
+This leaves room below Resend's 40 MB encoded email limit. Outbound attachments
+are encrypted before being saved to the sent folder and require `GCS_BUCKET`.
 
 ### GET /inbox
 
@@ -110,6 +123,9 @@ ambox read msg_abc123
 
 # Send email
 ambox send alice@example.com "Hello" --body "Message body"
+
+# Send one or more attachments
+ambox send alice@example.com "Report" --body "Attached." --attach report.csv --attach chart.png
 
 # Use specific agent
 ambox --agent other-agent inbox

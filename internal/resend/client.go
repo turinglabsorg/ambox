@@ -27,14 +27,20 @@ func NewClient(apiKey string) *Client {
 }
 
 type SendRequest struct {
-	From    string   `json:"from"`
-	To      []string `json:"to"`
-	CC      []string `json:"cc,omitempty"`
-	BCC     []string `json:"bcc,omitempty"`
-	Subject string   `json:"subject"`
-	HTML    string   `json:"html,omitempty"`
-	Text    string   `json:"text,omitempty"`
-	ReplyTo string   `json:"reply_to,omitempty"`
+	From        string       `json:"from"`
+	To          []string     `json:"to"`
+	CC          []string     `json:"cc,omitempty"`
+	BCC         []string     `json:"bcc,omitempty"`
+	Subject     string       `json:"subject"`
+	HTML        string       `json:"html,omitempty"`
+	Text        string       `json:"text,omitempty"`
+	ReplyTo     string       `json:"reply_to,omitempty"`
+	Attachments []Attachment `json:"attachments,omitempty"`
+}
+
+type Attachment struct {
+	Filename string `json:"filename"`
+	Content  string `json:"content"`
 }
 
 type SendResponse struct {

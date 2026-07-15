@@ -66,6 +66,7 @@ func Run() {
 	registerLimiter := middleware.NewRateLimiter(rate.Every(12*time.Minute), 5)
 	agentLimiter := middleware.NewRateLimiter(rate.Limit(100.0/60.0), 10)
 	maxBody := middleware.MaxBodySize(10 * 1024 * 1024)
+	maxSendBody := middleware.MaxBodySize(40 * 1024 * 1024)
 
 	auth := middleware.Auth(s)
 
@@ -75,7 +76,7 @@ func Run() {
 
 	mux.Handle("POST /v1/register", registerLimiter.ByIP(maxBody(http.HandlerFunc(h.Register))))
 
-	mux.Handle("POST /v1/send", auth(agentLimiter.ByAgent(maxBody(http.HandlerFunc(h.Send)))))
+	mux.Handle("POST /v1/send", auth(agentLimiter.ByAgent(maxSendBody(http.HandlerFunc(h.Send)))))
 	mux.Handle("GET /v1/inbox", auth(agentLimiter.ByAgent(http.HandlerFunc(h.Inbox))))
 	mux.Handle("DELETE /v1/emails/{id}", auth(agentLimiter.ByAgent(http.HandlerFunc(h.DeleteEmail))))
 	mux.Handle("PUT /v1/emails/{id}/move", auth(agentLimiter.ByAgent(maxBody(http.HandlerFunc(h.MoveEmail)))))

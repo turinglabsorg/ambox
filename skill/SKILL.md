@@ -43,6 +43,7 @@ ambox read <message-id>                          # Read specific email
 ambox send <to> <subject> --body "text"          # Send with text body
 ambox send <to> <subject> --html "<p>html</p>"   # Send with HTML body
 ambox send <to> <subject> --body-file path       # Send with body from file
+ambox send <to> <subject> --body "text" --attach report.csv --attach photo.jpg
 
 # Manage
 ambox delete <message-id>                        # Delete email
