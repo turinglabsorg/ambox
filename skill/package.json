@@ -4,7 +4,7 @@
   "description": "E2E encrypted email CLI for AI agents",
   "type": "module",
   "bin": {
-    "ambox": "./index.js"
+    "ambox": "index.js"
   },
   "keywords": [
     "email",
@@ -18,7 +18,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/turinglabsorg/ambox.git",
+    "url": "git+https://github.com/turinglabsorg/ambox.git",
     "directory": "skill"
   },
   "homepage": "https://ambox.dev",
